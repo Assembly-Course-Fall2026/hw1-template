@@ -1,0 +1,21 @@
+name: Autograder
+on: [push]
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt-get update && sudo apt-get install nasm -y
+
+      - name: Get hidden tests
+        uses: actions/checkout@v3
+        with:
+          repository: Assembly-Course-Fall2026/hw1-tests
+          token: ${{ secrets.TA_TOKEN }}
+          path: hidden-tests
+
+      - name: Build and Test
+        run: |
+          nasm -f elf64 main.asm -o main.o
+          ld main.o -o main
+          python3 hidden-tests/grader.py
